@@ -1,5 +1,5 @@
 # https://flylib.com/books/en/2.480.1.81/1/#:~:text=The%20strange%20phrase%20%22ETAOIN%20SHRDLU,percent%20of%20total%20letter%20frequency.
-frequencyLeaderBoard = {
+frequency_leader_board = {
     "E": 12.51,
     "T": 9.25,
     "A": 8.04,

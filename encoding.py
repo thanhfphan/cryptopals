@@ -1,26 +1,26 @@
 # base64 character
-encodeStd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+ENCODE_STD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
-# Convert binary string to hext string
-def binstr_to_hexstr(binstr):
-    l = len(binstr) // 4 * 4
-    for i in range(len(binstr) - l):
-        binstr = "0" + binstr
+# Convert binary string to hex string
+def binary_to_hex(bintext):
+    l = len(bintext) // 4 * 4
+    for i in range(len(bintext) - l):
+        bintext = "0" + bintext
     
     result = ""
-    for i in range(0, len(binstr), 4):
-        block = binstr[i:i+4]
+    for i in range(0, len(bintext), 4):
+        block = bintext[i:i+4]
         result = result + f'{int(block, 2):x}'
     
     return result
     
-# Convert hext string to binary string
-def hexstr_to_bintext(hexstr):
-    text = hexstr_to_text(hexstr)
+# Convert hex string to binary string
+def hex_to_binary(hextext):
+    text = hex_to_text(hextext)
 
-    return text_to_binarystr(text)
+    return text_to_binary(text)
 
-def hexstr_to_text(hexstr):
+def hex_to_text(hexstr):
     result = ""
     for i in range (0, len(hexstr), 2):
         block = hexstr[i:i+2]
@@ -29,7 +29,7 @@ def hexstr_to_text(hexstr):
     return result
 
 # Context text to binary string
-def text_to_binarystr(text):
+def text_to_binary(text):
     result = ""
     for t in text:
         result = result + '{0:08b}'.format(ord(t))
@@ -38,9 +38,9 @@ def text_to_binarystr(text):
 
             
 # Encoding hex string to base64 string
-def encode_hex_to_base64(hexstr):
-    text = hexstr_to_text(hexstr)
-    bintext = text_to_binarystr(text)
+def encode_hex_to_base64(hextext):
+    text = hex_to_text(hextext)
+    bintext = text_to_binary(text)
     l = len(bintext) // 6 * 6
     
     for i in range(len(bintext) - l):
@@ -49,6 +49,6 @@ def encode_hex_to_base64(hexstr):
     result = ""
     for i in range(0, len(binText), 6):
         block = bintext[i:i+6]
-        result = result + encodeStd[int(block, 2)]
+        result = result + ENCODE_STD[int(block, 2)]
    
     return result
