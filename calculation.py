@@ -22,3 +22,16 @@ def character_frequency_score(text):
         if t == " ":
             score = score + 1
     return score
+
+# caculate hamming distance between 2 bin text
+def hamming_distance(text1, text2):
+    if len(text1) != len(text2):
+        print("diff length")
+        return -1
+    
+    result = 0
+    for i in range(0, len(text1)):
+        if text1[i] != text2[i]:
+            result = result + 1
+    
+    return result
