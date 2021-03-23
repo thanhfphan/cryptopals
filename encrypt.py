@@ -1,4 +1,5 @@
 
+# return a plain text
 def repeating_xor_key(plaintext, key):
     result = ""
     for i in range(0, len(plaintext)):

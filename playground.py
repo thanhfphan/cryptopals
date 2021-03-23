@@ -11,8 +11,8 @@ import encrypt
 #print("Set 1 - Challenge 2")
 #str1 = encoding.hex_to_binary("1c0111001f010100061a024b53535009181c")
 #str2 = encoding.hex_to_binary("686974207468652062756c6c277320657965")
-#binstr = bitwise.xor_two_bit_string(str1, str2)
-#print(encoding.binary_to_hex(binstr))
+#bin_text = bitwise.xor_two_bit_string(str1, str2)
+#print(encoding.binary_to_hex(bin_text))
 #
 #print("\n")
 #print("Set 1 - Challenge 3")
@@ -21,27 +21,56 @@ import encrypt
 #print("\n")
 #print("Set 1 -- Challenge 4")
 ### download from https://cryptopals.com/static/challenge-data/4.txt
-#fileSet1Challenge4 = open("files/set1-challenge4.txt")
-#contentSet1Challenge4 = fileSet1Challenge4.read()
-#for line in contentSet1Challenge4.splitlines():
-#    decodedStr = decrypt.xor_single_hex(line)
-#    scoreDecodedStr = calculation.character_frequency_score(decodedStr)
-#    if scoreDecodedStr > 4:
-#        print(decodedStr) # look like the plain text is "Now that the party is jumping" :)))
+#file_set1_challenge4 = open("files/set1-challenge4.txt")
+#content_set1_challenge4 = file_set1_challenge4.read()
+#for line in content_set1_challenge4.splitlines():
+#    decoded_text = decrypt.xor_single_hex(line)
+#    score_decoded_text = calculation.character_frequency_score(decoded_text)
+#    if score_decoded_text > 4:
+#        print(decoded_text) # look like the plain text is "Now that the party is jumping" :)))
 #
 #print("\n")
 #print("Set 1 --  Challenge 5")
-#fileSet1Challenge5 = open("files/set1-challenge5.txt")
-#contentSet1Challenge5 = fileSet1Challenge5.read()
-#keySet1Challenge5 = "ICE"
-#cipherSet1Challenge5 = encrypt.repeating_xor_key(contentSet1Challenge5, keySet1Challenge5)
-#print(encoding.binary_to_hex(encoding.text_to_binary(cipherSet1Challenge5)))
+#file_set1_challenge5 = open("files/set1-challenge5.txt")
+#content_set1_challenge5 = file_set1_challenge5.read()
+#key_set1_challenge5 = "ICE"
+#cipher_set1_challenge5 = encrypt.repeating_xor_key(content_set1_challenge5, key_set1_challenge5)
+#print(encoding.text_to_hex(cipher_set1_challenge5))
 
 print("\n")
 print("Set 1 -- Chanllenge 6")
-bintext1 = encoding.text_to_binary("this is a test")
-bintext2 = encoding.text_to_binary("wokka wokka!!!")
-print(bintext1)
-print(bintext2)
-hammingdistance = calculation.hamming_distance(bintext1, bintext2)
-print(hammingdistance) # should be 37
+file_set1_challenge6 = open("files/set1-challenge6.txt")
+content_set1_challenge6_base64 = file_set1_challenge6.read()
+content_set1_challenge6 = encoding.decode_base64_to_text(content_set1_challenge6_base64)
+length_of_the_key = -1
+smallest_normalized = 99999
+# KEYSIZE from 2 to 40
+for i in range(2, 41):
+    text11 = content_set1_challenge6[i:2*i]
+    text12 = content_set1_challenge6[2*i:2*i+i]
+    hs1 = calculation.hamming_distance_2text(text11, text12)
+
+    text21 = content_set1_challenge6[3*i:3*i+i]
+    text22 = content_set1_challenge6[4*i:4*i+i]
+    hs2 = calculation.hamming_distance_2text(text21, text22)
+
+    text31 = content_set1_challenge6[6*i:6*i+i]
+    text32 = content_set1_challenge6[7*i:7*i+i]
+    hs3 = calculation.hamming_distance_2text(text31, text32)
+
+    avg_normalized = (hs1 + hs2 + hs3)/(3*i)
+    if avg_normalized < smallest_normalized:
+        smallest_normalized = avg_normalized
+        length_of_the_key = i
+
+block_dictionary = {}
+for i in range(0, len(content_set1_challenge6), length_of_the_key):
+    to_index = i + length_of_the_key
+    if to_index > len(content_set1_challenge6):
+        to_index = len(content_set1_challenge6)
+    block = content_set1_challenge6[i:to_index]
+    for i in range(0, len(block)):
+        if i in block_dictionary:
+            block_dictionary[i] = block_dictionary[i] + block[i]
+        else:
+            block_dictionary[i] = block[i]

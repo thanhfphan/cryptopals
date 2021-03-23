@@ -1,3 +1,5 @@
+import encoding
+
 # https://flylib.com/books/en/2.480.1.81/1/#:~:text=The%20strange%20phrase%20%22ETAOIN%20SHRDLU,percent%20of%20total%20letter%20frequency.
 frequency_leader_board = {
     "E": 12.51,
@@ -35,3 +37,16 @@ def hamming_distance(text1, text2):
             result = result + 1
     
     return result
+
+# caculate hamming distance between 2 hex
+def hamming_distance_2hex(hex1, hex2):
+    bin1 = encoding.hex_to_binary(hex1)
+    bin2 = encoding.hex_to_binary(hex2)
+
+    return hamming_distance(bin1, bin2)
+    
+def hamming_distance_2text(text1, text2):
+    bin1 = encoding.text_to_binary(text1)
+    bin2 = encoding.text_to_binary(text2)
+
+    return hamming_distance(bin1, bin2)

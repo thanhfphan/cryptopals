@@ -20,6 +20,10 @@ def hex_to_binary(hextext):
 
     return text_to_binary(text)
 
+def text_to_hex(text):
+    binary_of_text = text_to_binary(text)
+    return binary_to_hex(binary_of_text)
+
 def hex_to_text(hexstr):
     result = ""
     for i in range (0, len(hexstr), 2):
@@ -36,6 +40,13 @@ def text_to_binary(text):
     
     return result
 
+def binary_to_text(binary_text):
+    result = ""
+    for i in range(0, len(binary_text), 8):
+        block = binary_text[i:i+8]
+        result = result + chr(int(block, 2))
+    
+    return result
             
 # Encoding hex string to base64 string
 def encode_hex_to_base64(hextext):
@@ -52,3 +63,19 @@ def encode_hex_to_base64(hextext):
         result = result + ENCODE_STD[int(block, 2)]
    
     return result
+
+def decode_base64_to_text(base64text):
+    base64text = base64text.replace("=","").replace("\r", "").replace("\n", "")
+    binary_text = ""
+    for i in base64text:
+        index = ENCODE_STD.find(i)
+        if index < 0:
+            print(i)
+        binary_text = binary_text + '{0:06b}'.format(index)
+    
+    return binary_to_text(binary_text)
+
+    
+
+
+
