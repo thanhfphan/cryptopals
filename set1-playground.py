@@ -74,3 +74,11 @@ for i in range(0, len(content_set1_challenge6), length_of_the_key):
             block_dictionary[i] = block_dictionary[i] + block[i]
         else:
             block_dictionary[i] = block[i]
+
+key = ""
+for item in block_dictionary:
+    key = key + decrypt.break_single_key_xor(block_dictionary[item])
+
+# suprise it worked :)) with stupid cacl score by counting spaces(character_frequency_score function). lmao
+# the key is "Terminator X: Bring the noise"
+print(key) 
