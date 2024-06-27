@@ -32,17 +32,19 @@ func main() {
 	fmt.Println(string(text))
 }
 
-func decryptAES128ECB(data, key []byte) ([]byte, error) {
+func decryptAES128ECB(ciphertext, key []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 
-	decrypted := make([]byte, len(data))
-	size := 16
-
-	for bs, be := 0, size; bs < len(data); bs, be = bs+size, be+size {
-		cipher.Decrypt(decrypted[bs:be], data[bs:be])
+	size := cipher.BlockSize()
+	if len(ciphertext)%size != 0 {
+		return nil, fmt.Errorf("ciphertext is not a multiple of the block size")
+	}
+	decrypted := make([]byte, len(ciphertext))
+	for bs, be := 0, size; bs < len(ciphertext); bs, be = bs+size, be+size {
+		cipher.Decrypt(decrypted[bs:be], ciphertext[bs:be])
 	}
 
 	return decrypted, nil
