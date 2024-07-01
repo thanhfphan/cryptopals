@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"crypto/aes"
-	"crypto/cipher"
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
@@ -45,10 +44,34 @@ func EncryptCBC(plaintext, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	mode := cipher.NewCBCEncrypter(block, iv)
-	mode.CryptBlocks(ciphertext[blockSize:], plaintext)
+	prevBlock := iv
+	for i := 0; i < len(plaintext); i += blockSize {
+		currentBlock := plaintext[i : i+blockSize]
+		xorBlock := make([]byte, blockSize)
+		XORBytes(xorBlock, currentBlock, prevBlock)
+		// blockSize *2 cause we need to skip IV block
+		block.Encrypt(ciphertext[i+blockSize:i+blockSize*2], xorBlock)
+		prevBlock = ciphertext[i+blockSize : i+blockSize*2]
+	}
 
 	return ciphertext, nil
+}
+
+func XORBytes(desc, src, b []byte) []byte {
+	l := len(src)
+	if len(b) < l {
+		l = len(b)
+	}
+
+	if len(desc) < l {
+		panic("xorbytes: len(desc) < l")
+	}
+
+	for i := range l {
+		desc[i] = src[i] ^ b[i]
+	}
+
+	return desc
 }
 
 func DecryptCBC(ciphertext, key []byte) ([]byte, error) {
@@ -63,17 +86,23 @@ func DecryptCBC(ciphertext, key []byte) ([]byte, error) {
 	}
 
 	iv := ciphertext[:blockSize]
+	preBlock := iv
 	ciphertext = ciphertext[blockSize:]
+	plaintext := make([]byte, len(ciphertext)-blockSize)
+	for i := 0; i < len(ciphertext); i += blockSize {
+		currentBlock := ciphertext[i : i+blockSize]
+		decryptedBlock := make([]byte, blockSize)
+		block.Decrypt(decryptedBlock, currentBlock)
+		XORBytes(plaintext[i:i+blockSize], decryptedBlock, preBlock)
+		preBlock = currentBlock
+	}
 
-	mode := cipher.NewCBCDecrypter(block, iv)
-	mode.CryptBlocks(ciphertext, ciphertext)
-
-	ciphertext, err = PKCS7Unpadding(ciphertext)
+	plaintext, err = PKCS7Unpadding(plaintext)
 	if err != nil {
 		return nil, err
 	}
 
-	return ciphertext, nil
+	return plaintext, nil
 }
 
 func PKCS7Padding(plaintext []byte, blockSize int) []byte {
@@ -84,10 +113,11 @@ func PKCS7Padding(plaintext []byte, blockSize int) []byte {
 }
 
 func PKCS7Unpadding(paddedText []byte) ([]byte, error) {
-	len := len(paddedText)
-	paddingLen := int(paddedText[len-1])
-	if paddingLen >= len {
+	l := len(paddedText)
+	// fmt.Println(string(paddedText))
+	paddingLen := int(paddedText[l-1])
+	if paddingLen >= l {
 		return nil, fmt.Errorf("padding length is greater than the length of the text")
 	}
-	return paddedText[:len-paddingLen], nil
+	return paddedText[:l-paddingLen], nil
 }
