@@ -88,7 +88,7 @@ func DecryptCBC(ciphertext, key []byte) ([]byte, error) {
 	iv := ciphertext[:blockSize]
 	preBlock := iv
 	ciphertext = ciphertext[blockSize:]
-	plaintext := make([]byte, len(ciphertext)-blockSize)
+	plaintext := make([]byte, len(ciphertext))
 	for i := 0; i < len(ciphertext); i += blockSize {
 		currentBlock := ciphertext[i : i+blockSize]
 		decryptedBlock := make([]byte, blockSize)
